@@ -5,7 +5,25 @@
 </head>
 <body>
 <h1>Welcome to Index PAGE!</h1>
+<br>
+<br>
 
 
+<h2>Click button "Enter to begin :"</h2>
+<br>
+<input type="button" value="Enter" onclick="window.location.href='/login'">
+<br>
+
+На время настройки!!!<br>
+<input type="button" value="Registration" onclick="window.location.href='/register'">
+<br>
+<form th:action="@{/addRole}">
+    <button type="submit" th:name="id" th:value="${id}">Add role</button>
+</form>
+
+<br>
+<form th:action="@{/logout}" method="post">
+    <input type="submit" value="Sign Out"/>
+</form>
 </body>
 </html>

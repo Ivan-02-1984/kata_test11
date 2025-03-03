@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<h2>All Users List</h2>
+<br>
+<br>
+<div>
+    <table th:border="3">
+        <tr>
+            <th>Id</th>
+            <th>Username</th>
+            <th>First_name</th>
+            <th>Last_name</th>
+            <th>Email</th>
+            <th>Enabled</th>
+            <th>Password</th>
+            <th>Operations</th>
+        </tr>
+        <tr th:each="usr : ${allUser}">
+
+            <td th:utext="${usr.id}">...</td>
+            <td th:utext="${usr.username}">...</td>
+            <td th:utext="${usr.first_name}">...</td>
+            <td th:utext="${usr.last_name}">...</td>
+            <td th:utext="${usr.email}">...</td>
+            <td th:utext="${usr.enabled}">...</td>
+            <td th:utext="${usr.password}">...</td>
+            <td>
+                <form th:action="@{/admin/editUser}">
+                    <button type="submit" th:name="userID" th:value="${usr.id}">Update</button>
+                </form>
+
+                <form th:action="@{/admin/deleteUser}" method="post">
+                    <input type="hidden" name="id" th:value="${usr.id}" />
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </td>
+        </tr>
+    </table>
+    <br>
+    <input type="button" value="Registration" onclick="window.location.href='/register'">
+    <br>
+    <form th:action="@{/addRole}">
+        <button type="submit" th:name="id" th:value="${id}">Add role</button>
+    </form>
+    <br>
+
+</div>
+<br>
+<form th:action="@{/logout}" method="post">
+    <input type="submit" value="Sign Out"/>
+</form>
+
+</body>
+</html>

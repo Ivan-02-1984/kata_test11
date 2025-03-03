@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Options of admin</title>
+</head>
+<body>
+
+<h1>Welcome to Admin Options Page</h1>
+<br><br>
+
+<h2>Work Begin :</h2>
+
+<input type="button" value="Enter" onclick="window.location.href='/admin/for_admin'">
+<br>
+<input type="button" value="For user" onclick="window.location.href='/user'">
+<br>
+<br>
+<form th:action="@{/logout}" method="post">
+    <input type="submit" value="Sign Out"/>
+</form>
+</body>
+</html>
