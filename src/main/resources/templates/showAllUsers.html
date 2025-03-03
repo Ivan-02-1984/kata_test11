@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
     <title></title>
@@ -31,8 +30,8 @@
             <td th:utext="${usr.enabled}">...</td>
             <td th:utext="${usr.password}">...</td>
             <td>
-                <form th:action="@{/admin/editUser}">
-                    <button type="submit" th:name="userID" th:value="${usr.id}">Update</button>
+                <form th:action="@{/editUser}">
+                    <button type="submit" th:name="id" th:value="${usr.id}">Update</button>
                 </form>
 
                 <form th:action="@{/admin/deleteUser}" method="post">

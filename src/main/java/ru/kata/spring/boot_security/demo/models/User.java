@@ -1,5 +1,7 @@
 package ru.kata.spring.boot_security.demo.models;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
@@ -16,6 +18,7 @@ public class User implements UserDetails {
            joinColumns = @JoinColumn(name = "user_id"),
            inverseJoinColumns = @JoinColumn(name = "role_id")
    )
+
    private Set<Role> roles=new HashSet<>();
 
    @Id

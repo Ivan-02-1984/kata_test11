@@ -10,7 +10,7 @@
 <br>
 <br>
 
-<form th:action="@{/admin/update}" th:object="${user}" method="post">
+<form th:action="@{/editUser}" th:object="${user}" method="post">
     <input type="hidden" th:field="*{id}" />
     <div>
         <label for="username">Username:</label>
@@ -37,27 +37,15 @@
         <input type="email" id="email" th:field="*{email}" required />
     </div>
     <br>
-    <button type="submit">update user</button>
-
-<!--    <p>-->
-<!--        <label>Roles:-->
-<!--            <input type="checkbox" name="role"-->
-<!--                   th:each="role : ${allRoles}"-->
-<!--                   th:text="${role.name}"-->
-<!--                   th:value="${role.id}"-->
-<!--                   th:checked="${user.roles.contains(role)}"-->
-<!--            />-->
-<!--        </label>-->
-<!--    </p>-->
-
     <div>
-        <label for="roles">Roles:</label>
-        <select id="roles" th:field="*{roles}" multiple>
+        <label for="role">Roles:</label>
+        <select id="role" name="role" multiple>
             <option th:each="role : ${allRoles}" th:value="${role.id}" th:text="${role.name}"></option>
         </select>
     </div>
+    <br>
+    <button type="submit">update user</button>
 </form>
-
 <br>
 <form th:action="@{/logout}" method="post">
     <input type="submit" value="Sign Out"/>

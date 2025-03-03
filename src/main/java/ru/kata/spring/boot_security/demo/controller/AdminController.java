@@ -34,22 +34,22 @@ public class AdminController {
         return "showAllUsers";
     }
 
-    @GetMapping("/editUser")
-    public String showEditForm(@RequestParam("userID") Long id, Model model) {
-        User user = userService.findById(id);
-        List<Role> allRoles = roleService.getAllRoles();
-
-        model.addAttribute("user", user);
-        model.addAttribute("allRoles", allRoles);
-
-        return "edit_user";
-    }
-
-    @PostMapping("update")
-    public String updateUser(@ModelAttribute User user) {
-        userService.updateUser(user);
-        return "redirect:/admin";
-    }
+//    @GetMapping("/editUser")
+//    public String showEditForm(@RequestParam("userID") Long id, Model model) {
+//        User user = userService.findById(id);
+//        List<Role> allRoles = roleService.getAllRoles();
+//
+//        model.addAttribute("user", user);
+//        model.addAttribute("allRoles", allRoles);
+//
+//        return "edit_user";
+//    }
+//
+//    @PostMapping("update")
+//    public String updateUser(@ModelAttribute User user) {
+//        userService.updateUser(user);
+//        return "redirect:/admin";
+//    }
 
     @PostMapping("/deleteUser")
     public String deleteUser(@RequestParam Long id) {
