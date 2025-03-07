@@ -1,14 +1,10 @@
 package ru.kata.spring.boot_security.demo.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.kata.spring.boot_security.demo.dao.UserDao;
-import ru.kata.spring.boot_security.demo.dao.UserRepository;
 import ru.kata.spring.boot_security.demo.models.Role;
 import ru.kata.spring.boot_security.demo.models.User;
-
 import javax.transaction.Transactional;
 import java.util.HashSet;
 import java.util.List;
@@ -19,32 +15,33 @@ public class UserServiceImp implements UserService {
 
     private final UserDao userDao;
     private final RoleService roleService;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserServiceImp(UserDao userDao, RoleService roleService) {
+    public UserServiceImp(UserDao userDao, RoleService roleService, PasswordEncoder passwordEncoder) {
         this.userDao = userDao;
         this.roleService = roleService;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
     @Transactional
+    @Override
     public void add(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         Set<Role> roles = new HashSet<>();
         for (Role role : user.getRoles()) {
-            roles.add(roleService.findById(role.getId()));
+            Role existingRole = roleService.findById(role.getId());
+            if (existingRole != null) {
+                roles.add(existingRole);
+            }
         }
         user.setRoles(roles);
 
-        userDao.add(user);
+        userDao.add(user); // Сохраняем пользователя
     }
 
     @Transactional
+    @Override
     public void updateUser(User user) {
         userDao.findById(user.getId());
         user.setUsername(user.getUsername());
@@ -81,6 +78,6 @@ public class UserServiceImp implements UserService {
     @Transactional
     @Override
     public User findByUsername(String username) {
-        return userRepository.findByUsername(username);
+        return userDao.findByUsername(username);
     }
 }

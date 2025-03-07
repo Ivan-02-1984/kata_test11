@@ -22,15 +22,15 @@
         </tr>
         <tr th:each="usr : ${allUser}">
 
-            <td th:utext="${usr.id}">...</td>
-            <td th:utext="${usr.username}">...</td>
-            <td th:utext="${usr.first_name}">...</td>
-            <td th:utext="${usr.last_name}">...</td>
-            <td th:utext="${usr.email}">...</td>
-            <td th:utext="${usr.enabled}">...</td>
-            <td th:utext="${usr.password}">...</td>
+            <td th:text="${usr.id}">...</td>
+            <td th:text="${usr.username}">...</td>
+            <td th:text="${usr.firstName}">...</td>
+            <td th:text="${usr.lastName}">...</td>
+            <td th:text="${usr.email}">...</td>
+            <td th:text="${usr.enabled}">...</td>
+            <td th:text="${usr.password}">...</td>
             <td>
-                <form th:action="@{/editUser}">
+                <form th:action="@{/admin/editUser}">
                     <button type="submit" th:name="id" th:value="${usr.id}">Update</button>
                 </form>
 
@@ -43,6 +43,9 @@
     </table>
     <br>
     <input type="button" value="Registration" onclick="window.location.href='/register'">
+    <br>
+    <br><br>
+    <input type="button" value="User page" onclick="window.location.href='/user'">
     <br>
     <form th:action="@{/addRole}">
         <button type="submit" th:name="id" th:value="${id}">Add role</button>

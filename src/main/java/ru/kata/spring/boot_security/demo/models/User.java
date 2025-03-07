@@ -1,7 +1,5 @@
 package ru.kata.spring.boot_security.demo.models;
 
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
@@ -12,25 +10,26 @@ import java.util.Set;
 @Entity
 @Table(name = "users")
 public class User implements UserDetails {
-   @ManyToMany(fetch = FetchType.EAGER)
+   @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
    @JoinTable(
            name = "user_role",
            joinColumns = @JoinColumn(name = "user_id"),
            inverseJoinColumns = @JoinColumn(name = "role_id")
    )
 
-   private Set<Role> roles=new HashSet<>();
-
+   private Set<Role> roles = new HashSet<>();
    @Id
    @GeneratedValue(strategy = GenerationType.IDENTITY)
    private Long id;
-
    private String username;
    private String password;
-   private String first_name;
-   private String last_name;
+   @Column(name = "first_name")
+   private String firstName;
+   @Column(name = "last_name")
+   private String lastName;
    private String email;
    private boolean enabled;
+   private byte age;
 
    @Override
    public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -64,7 +63,7 @@ public class User implements UserDetails {
 
    @Override
    public boolean isEnabled() {
-      return true;
+      return enabled;
    }
 
    public Set<Role> getRoles() {
@@ -83,24 +82,24 @@ public class User implements UserDetails {
       this.id = id;
    }
 
-   public String getFirst_name() {
-      return first_name;
+   public String getFirstName() {
+      return firstName;
    }
 
-   public void setFirst_name(String first_name) {
-      this.first_name = first_name;
+   public void setFirstName(String firstName) {
+      this.firstName = firstName;
    }
 
    public void setUsername(String username) {
       this.username = username;
    }
 
-   public String getLast_name() {
-      return last_name;
+   public String getLastName() {
+      return lastName;
    }
 
-   public void setLast_name(String last_name) {
-      this.last_name = last_name;
+   public void setLastName(String lastName) {
+      this.lastName = lastName;
    }
 
    public String getEmail() {
@@ -119,6 +118,14 @@ public class User implements UserDetails {
       this.enabled = enabled;
    }
 
+   public byte getAge() {
+      return age;
+   }
+
+   public void setAge(byte age) {
+      this.age = age;
+   }
+
    @Override
    public String toString() {
       return "User{" +
@@ -126,10 +133,11 @@ public class User implements UserDetails {
               ", id=" + id +
               ", username='" + username + '\'' +
               ", password='" + password + '\'' +
-              ", firstName='" + first_name + '\'' +
-              ", last_name='" + last_name + '\'' +
+              ", firstName='" + firstName + '\'' +
+              ", lastName='" + lastName + '\'' +
               ", email='" + email + '\'' +
               ", enabled=" + enabled +
+              ", age=" + age +
               '}';
    }
 }
