@@ -2,7 +2,6 @@ package ru.kata.spring.boot_security.demo.dao;
 
 import org.springframework.stereotype.Repository;
 import ru.kata.spring.boot_security.demo.models.Role;
-
 import javax.persistence.EntityManager;
 import java.util.List;
 
@@ -35,4 +34,7 @@ public class RoleDaoImp implements RoleDao {
     public void saveRole(Role role) {
         entityManager.persist(role);
     }
+
+    @Override
+    public void deleteRole(Long id) {entityManager.remove(id);}
 }
