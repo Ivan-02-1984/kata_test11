@@ -36,6 +36,6 @@ public class CustomUserDetailsService implements UserDetailsService {
                 user.getPassword(),
                 user.isEnabled(),
                 true, true, true,
-                user.getRoles()); // Роли должны иметь префикс ROLE_
+                user.getRoles());
     }
 }
