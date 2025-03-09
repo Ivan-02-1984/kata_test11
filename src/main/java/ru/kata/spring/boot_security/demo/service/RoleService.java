@@ -1,15 +1,15 @@
 package ru.kata.spring.boot_security.demo.service;
 
 import ru.kata.spring.boot_security.demo.models.Role;
-
 import java.util.List;
-import java.util.Set;
+import java.util.Optional;
 
 public interface RoleService {
+    Role createRole(Role role);
+    Role updateRole(Long id, Role role);
+    void deleteRole(Long id);
     List<Role> getAllRoles();
-    Role findByName(String name);
-    Role findById(Long id);
-    void saveRole(Role role);
-    void deleteRoleById(Long id);
-    Set<Role> getRolesByIds(Set<Long> roleIds);
+    Optional<Role> findById(Long id);
+    Optional<Role> findByName(String name);
+    List<Role> findRolesByIds(List<Long> ids);
 }

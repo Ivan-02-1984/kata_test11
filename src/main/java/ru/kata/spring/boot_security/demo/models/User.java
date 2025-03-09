@@ -10,27 +10,38 @@ import java.util.Set;
 @Entity
 @Table(name = "users")
 public class User implements UserDetails {
+
+   @Id
+   @GeneratedValue(strategy = GenerationType.IDENTITY)
+   private Long id;
+   private String username;
+   private String password;
+   private String firstName;
+   private String lastName;
+   private String email;
+   private boolean enabled;
+   private byte age;
+
+   public User(){}
+
+   public User(Long id, String username, String password, String firstName, String lastName, String email, boolean enabled, byte age) {
+      this.id = id;
+      this.username = username;
+      this.password = password;
+      this.firstName = firstName;
+      this.lastName = lastName;
+      this.email = email;
+      this.enabled = enabled;
+      this.age = age;
+   }
+
    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
    @JoinTable(
            name = "user_role",
            joinColumns = @JoinColumn(name = "user_id"),
            inverseJoinColumns = @JoinColumn(name = "role_id")
    )
-
    private Set<Role> roles = new HashSet<>();
-   @Id
-   @GeneratedValue(strategy = GenerationType.IDENTITY)
-   private Long id;
-   private String username;
-   private String password;
-   @Column(name = "first_name")
-   private String firstName;
-   @Column(name = "last_name")
-   private String lastName;
-   private String email;
-   private boolean enabled;
-   private byte age;
-
    @Override
    public Collection<? extends GrantedAuthority> getAuthorities() {
       return roles;

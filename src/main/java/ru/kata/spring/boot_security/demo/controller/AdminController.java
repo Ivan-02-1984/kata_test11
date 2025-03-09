@@ -1,8 +1,6 @@
 package ru.kata.spring.boot_security.demo.controller;
 
 import org.hibernate.Hibernate;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,11 +9,7 @@ import ru.kata.spring.boot_security.demo.models.Role;
 import ru.kata.spring.boot_security.demo.models.User;
 import ru.kata.spring.boot_security.demo.service.RoleService;
 import ru.kata.spring.boot_security.demo.service.UserService;
-
-import javax.transaction.Transactional;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Controller
 @RequestMapping("/admin")
@@ -30,12 +24,11 @@ public class AdminController {
     }
 
     @GetMapping
-    @Transactional
     public String showAllUsers(Model model) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         User currentUser = userService.findByUsername(username);
 
-        List<User> users = userService.allUsers();
+        List<User> users = userService.getAllUsers();
         users.forEach(user -> Hibernate.initialize(user.getRoles()));
 
         model.addAttribute("user", new User()); // Добавляем пустой объект для формы
@@ -49,14 +42,13 @@ public class AdminController {
 
     @PostMapping("/deleteUser")
     public String deleteUser(@RequestParam Long id) {
-        userService.deleteById(id);
+        userService.deleteUser(id);
         return "redirect:/admin";
     }
 
     @GetMapping("/editUser")
-    @Transactional
     public String showEditForm(@RequestParam Long id, Model model) {
-        User user = userService.findById(id);
+        User user = userService.getUserById(id);
         Hibernate.initialize(user.getRoles());
         List<Role> allRoles = roleService.getAllRoles();
         model.addAttribute("user", user);
@@ -66,10 +58,17 @@ public class AdminController {
     }
 
     @PostMapping("/editUser")
-    public String updateUser(@ModelAttribute User user, @RequestParam("roleIds") Set<Long> roleIds) {
-        Set<Role> roles = roleService.getRolesByIds(roleIds);
+    public String updateUser(
+            @ModelAttribute User user,
+            @RequestParam(name = "roleIds", required = false) Set<Long> roleIds) { // Изменили здесь
+
+        Set<Role> roles = (roleIds != null && !roleIds.isEmpty())
+                ? new HashSet<>(roleService.findRolesByIds(new ArrayList<>(roleIds)))
+                : Collections.emptySet();
+
         user.setRoles(roles);
         userService.updateUser(user);
+
         return "redirect:/admin";
     }
 }

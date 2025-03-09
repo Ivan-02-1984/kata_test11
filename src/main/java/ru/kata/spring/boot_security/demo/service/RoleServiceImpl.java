@@ -1,57 +1,77 @@
 package ru.kata.spring.boot_security.demo.service;
 
 import org.springframework.stereotype.Service;
-import ru.kata.spring.boot_security.demo.dao.RoleDao;
+import ru.kata.spring.boot_security.demo.exception_handling.RoleNotFoundException;
 import ru.kata.spring.boot_security.demo.models.Role;
+import ru.kata.spring.boot_security.demo.repositiry.RoleRepository;
+
 import javax.transaction.Transactional;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Service
 public class RoleServiceImpl implements RoleService {
 
-    private final RoleDao roleDao;
+    private final RoleRepository roleRepository;
 
-    public RoleServiceImpl(RoleDao roleDao) {
-        this.roleDao = roleDao;
+    public RoleServiceImpl(RoleRepository roleRepository) {
+        this.roleRepository = roleRepository;
     }
 
-    @Transactional
     @Override
+    @Transactional
+    public Role createRole(Role role) {
+        if (roleRepository.existsByName(role.getName())) {
+            throw new IllegalArgumentException("Role already exists: " + role.getName());
+        }
+        return roleRepository.save(role);
+    }
+
+    @Override
+    @Transactional
+    public Role updateRole(Long id, Role updatedRole) {
+        Role existingRole = roleRepository.findById(id)
+                .orElseThrow(() -> new RoleNotFoundException("Role not found with id: " + id));
+
+        if (!existingRole.getName().equals(updatedRole.getName())
+                && roleRepository.existsByName(updatedRole.getName())) {
+            throw new IllegalArgumentException("Role name already exists: " + updatedRole.getName());
+        }
+
+        existingRole.setName(updatedRole.getName());
+        return roleRepository.save(existingRole);
+    }
+
+    @Override
+    @Transactional
+    public void deleteRole(Long id) {
+        if (!roleRepository.existsById(id)) {
+            throw new RoleNotFoundException("Role not found with id: " + id);
+        }
+        roleRepository.deleteById(id);
+    }
+
+    @Override
+    @Transactional
     public List<Role> getAllRoles() {
-        return roleDao.getAllRoles();
+        return roleRepository.findAll();
     }
 
-    @Transactional
     @Override
-    public Role findByName(String name) {
-        return roleDao.findByName(name);
+    @Transactional
+    public Optional<Role> findById(Long id) {
+        return roleRepository.findById(id);
     }
 
-    @Transactional
     @Override
-    public Role findById(Long id) {
-        return roleDao.findById(id);
+    @Transactional
+    public Optional<Role> findByName(String name) {
+        return roleRepository.findByName(name);
     }
 
-    @Transactional
     @Override
-    public void saveRole(Role role){
-        roleDao.saveRole(role);
-    }
-
     @Transactional
-    @Override
-    public void deleteRoleById(Long id) {
-        roleDao.deleteRole(id);
-    }
-
-    @Transactional
-    @Override
-    public Set<Role> getRolesByIds(Set<Long> roleIds) {
-        return roleIds.stream()
-                .map(this::findById)
-                .collect(Collectors.toSet());
+    public List<Role> findRolesByIds(List<Long> ids) {
+        return roleRepository.findAllByIdIn(ids); // Используйте новый метод
     }
 }
