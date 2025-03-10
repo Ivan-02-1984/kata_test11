@@ -4,12 +4,16 @@ import org.hibernate.Hibernate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.kata.spring.boot_security.demo.models.Role;
 import ru.kata.spring.boot_security.demo.models.User;
 import ru.kata.spring.boot_security.demo.service.RoleService;
 import ru.kata.spring.boot_security.demo.service.UserService;
-import java.util.*;
+import org.springframework.validation.BindingResult;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 @Controller
 @RequestMapping("/admin")
@@ -58,17 +62,30 @@ public class AdminController {
     }
 
     @PostMapping("/editUser")
-    public String updateUser(
-            @ModelAttribute User user,
-            @RequestParam(name = "roleIds", required = false) Set<Long> roleIds) { // Изменили здесь
-
-        Set<Role> roles = (roleIds != null && !roleIds.isEmpty())
-                ? new HashSet<>(roleService.findRolesByIds(new ArrayList<>(roleIds)))
-                : Collections.emptySet();
-
+    public String updateUser(@ModelAttribute User user, @RequestParam("roleIds") Set<Long> roleIds) {
+        Set<Role> roles = roleService.findRolesByIds(roleIds);
         user.setRoles(roles);
         userService.updateUser(user);
+        return "redirect:/admin";
+    }
 
+    @GetMapping("/new")
+    public String showNewUserForm(Model model) {
+        model.addAttribute("user", new User());
+        model.addAttribute("allRoles", roleService.getAllRoles());
+        return "admin/new";
+    }
+
+    @PostMapping("/new")
+    public String createUser(@ModelAttribute("user")@Validated User user,
+                             BindingResult result,
+                             Model model) {
+        if (result.hasErrors()) {
+            model.addAttribute("allErrors", result.getAllErrors()); // Передаем ошибки валидации
+            model.addAttribute("allRoles", roleService.getAllRoles());
+            return "admin/new";
+        }
+        userService.createUser(user);
         return "redirect:/admin";
     }
 }

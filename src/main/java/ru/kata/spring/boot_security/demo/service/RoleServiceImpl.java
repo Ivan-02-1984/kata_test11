@@ -1,13 +1,14 @@
 package ru.kata.spring.boot_security.demo.service;
 
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import ru.kata.spring.boot_security.demo.exception_handling.RoleNotFoundException;
 import ru.kata.spring.boot_security.demo.models.Role;
 import ru.kata.spring.boot_security.demo.repositiry.RoleRepository;
-
-import javax.transaction.Transactional;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class RoleServiceImpl implements RoleService {
@@ -71,7 +72,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     @Transactional
-    public List<Role> findRolesByIds(List<Long> ids) {
-        return roleRepository.findAllByIdIn(ids); // Используйте новый метод
+    public Set<Role> findRolesByIds(Set<Long> roleIds) {
+        return new HashSet<>(roleRepository.findAllById(roleIds));
     }
 }

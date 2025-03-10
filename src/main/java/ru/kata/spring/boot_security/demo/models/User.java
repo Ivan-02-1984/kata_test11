@@ -1,8 +1,8 @@
 package ru.kata.spring.boot_security.demo.models;
 
+import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import javax.persistence.*;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -22,10 +22,15 @@ public class User implements UserDetails {
    private boolean enabled;
    private byte age;
 
-   public User(){}
-
-   public User(Long id, String username, String password, String firstName, String lastName, String email, boolean enabled, byte age) {
-      this.id = id;
+   @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE},fetch = FetchType.EAGER)
+   @JoinTable(
+           name = "user_role",
+           joinColumns = @JoinColumn(name = "user_id"),
+           inverseJoinColumns = @JoinColumn(name = "role_id")
+   )
+   private Set<Role> roles = new HashSet<>();
+   public User() {}
+   public User(String username, String password, String firstName, String lastName, String email, boolean enabled, byte age) {
       this.username = username;
       this.password = password;
       this.firstName = firstName;
@@ -35,13 +40,6 @@ public class User implements UserDetails {
       this.age = age;
    }
 
-   @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
-   @JoinTable(
-           name = "user_role",
-           joinColumns = @JoinColumn(name = "user_id"),
-           inverseJoinColumns = @JoinColumn(name = "role_id")
-   )
-   private Set<Role> roles = new HashSet<>();
    @Override
    public Collection<? extends GrantedAuthority> getAuthorities() {
       return roles;
@@ -140,8 +138,7 @@ public class User implements UserDetails {
    @Override
    public String toString() {
       return "User{" +
-              "roles=" + roles +
-              ", id=" + id +
+              "id=" + id +
               ", username='" + username + '\'' +
               ", password='" + password + '\'' +
               ", firstName='" + firstName + '\'' +

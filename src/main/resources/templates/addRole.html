@@ -3,17 +3,48 @@
 <head>
   <meta charset="UTF-8">
   <title>Add Role to User</title>
+  <link rel="icon" type="image/x-icon" th:href="@{/favicon.ico}">
+  <!-- Подключение CSS Bootstrap -->
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-<h1>Add New Role</h1>
-<form th:action="@{/addRole}" th:object="${role}" method="post">
-  <label for="name">Role Name:</label>
-  <input type="text" id="name" th:field="*{name}" required/>
-  <button type="submit">Add Role</button>
-</form>
-<br><br>
-<form th:action="@{/logout}" method="post">
-  <input type="submit" value="Sign Out"/>
-</form>
+<body class="bg-light">
+<div class="container mt-5">
+  <h1 class="text-center">Add New Role</h1>
+  <form th:action="@{/addRole}" th:object="${role}" method="post" class="mt-4">
+    <div class="form-group">
+      <label for="name">Role Name:</label>
+      <input type="text" class="form-control" id="name" th:field="*{name}" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Add Role</button>
+  </form>
+  <br><br>
+  <form th:action="@{/logout}" method="post">
+    <button type="submit" class="btn btn-secondary">Sign Out</button>
+  </form>
+</div>
+<!-- Подключение JS Bootstrap и зависимостей -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 </body>
 </html>
+
+<!--<!DOCTYPE html>-->
+<!--<html xmlns:th="http://www.thymeleaf.org" lang="en">-->
+<!--<head>-->
+<!--  <meta charset="UTF-8">-->
+<!--  <title>Add Role to User</title>-->
+<!--</head>-->
+<!--<body>-->
+<!--<h1>Add New Role</h1>-->
+<!--<form th:action="@{/addRole}" th:object="${role}" method="post">-->
+<!--  <label for="name">Role Name:</label>-->
+<!--  <input type="text" id="name" th:field="*{name}" required/>-->
+<!--  <button type="submit">Add Role</button>-->
+<!--</form>-->
+<!--<br><br>-->
+<!--<form th:action="@{/logout}" method="post">-->
+<!--  <input type="submit" value="Sign Out"/>-->
+<!--</form>-->
+<!--</body>-->
+<!--</html>-->

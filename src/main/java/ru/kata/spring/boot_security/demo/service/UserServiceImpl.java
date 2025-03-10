@@ -1,5 +1,8 @@
 package ru.kata.spring.boot_security.demo.service;
 
+import jakarta.transaction.Transactional;
+import org.hibernate.Hibernate;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.kata.spring.boot_security.demo.exception_handling.DuplicateUsernameException;
@@ -9,7 +12,6 @@ import ru.kata.spring.boot_security.demo.models.User;
 import ru.kata.spring.boot_security.demo.repositiry.RoleRepository;
 import ru.kata.spring.boot_security.demo.repositiry.UserRepository;
 import javax.management.relation.RoleNotFoundException;
-import javax.transaction.Transactional;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,7 +23,7 @@ public class UserServiceImpl implements UserService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository,@Qualifier("myPasswordEncoder") PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
@@ -35,7 +37,11 @@ public class UserServiceImpl implements UserService {
         }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        setManagedRoles(user);
+        try {
+            setManagedRoles(user);
+        } catch (RoleNotFoundException e) {
+            throw new RuntimeException("Role not found", e);
+        }
         return userRepository.save(user);
     }
 
@@ -45,7 +51,6 @@ public class UserServiceImpl implements UserService {
         User existingUser = userRepository.findById(updatedUser.getId())
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        // Обновляем ВСЕ поля
         existingUser.setUsername(updatedUser.getUsername());
         existingUser.setFirstName(updatedUser.getFirstName());
         existingUser.setLastName(updatedUser.getLastName());
@@ -53,13 +58,16 @@ public class UserServiceImpl implements UserService {
         existingUser.setEmail(updatedUser.getEmail());
         existingUser.setEnabled(updatedUser.isEnabled());
 
-        // Обновление пароля только если он не пустой
-        if (!updatedUser.getPassword().isEmpty()) {
+        if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
             existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
         }
 
-        // Обновление ролей
-        if (updatedUser.getRoles() != null && !updatedUser.getRoles().isEmpty()) {
+        if (updatedUser.getRoles() != null) {
+            try {
+                setManagedRoles(updatedUser);
+            } catch (RoleNotFoundException e) {
+                throw new RuntimeException("Role not found", e);
+            }
             existingUser.setRoles(updatedUser.getRoles());
         }
 
@@ -67,20 +75,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional
     public User getUserById(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
     }
 
     @Override
-    @Transactional
     public List<User> getAllUsers() {
-        return userRepository.findAll();
+        List<User> users = userRepository.findAll();
+        users.forEach(user -> Hibernate.initialize(user.getRoles())); // Инициализация внутри транзакции
+        return users;
     }
 
-    @Override
     @Transactional
+    @Override
     public void deleteUser(Long id) {
         if (!userRepository.existsById(id)) {
             throw new UserNotFoundException("User not found with id: " + id);
@@ -89,13 +97,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional
     public User findByUsername(String username) {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException("User not found: " + username));
     }
 
-    private void setManagedRoles(User user) {
+    private void setManagedRoles(User user) throws RoleNotFoundException {
         List<Long> roleIds = user.getRoles().stream()
                 .map(Role::getId)
                 .collect(Collectors.toList());
@@ -103,11 +110,7 @@ public class UserServiceImpl implements UserService {
         List<Role> managedRoles = roleRepository.findAllById(roleIds);
 
         if (managedRoles.size() != roleIds.size()) {
-            try {
-                throw new RoleNotFoundException("One or more roles not found");
-            } catch (RoleNotFoundException e) {
-                throw new RuntimeException(e);
-            }
+            throw new RoleNotFoundException("One or more roles not found");
         }
 
         user.setRoles(new HashSet<>(managedRoles));

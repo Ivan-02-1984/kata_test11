@@ -2,29 +2,44 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head>
     <title>Spring Security Example</title>
+
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" th:href="@{/favicon.ico}">
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </head>
-<body>
+<body class="bg-light">
+<div class="container">
+    <h1 class="text-center mt-5">Welcome to Index PAGE!</h1>
+    <br>
+    <br>
 
-<h1>Welcome to Index PAGE!</h1>
-<br>
-<br>
+    <h2 class="text-center">Click button "Enter to begin :"</h2>
+    <br>
+    <div class="text-center">
+        <button type="button" class="btn btn-primary" onclick="window.location.href='/login'">Enter</button>
+    </div>
+    <br>
 
+    <div class="text-center">
+        <p>На время настройки!!!</p>
+        <button type="button" class="btn btn-secondary" onclick="window.location.href='/register'">Registration</button>
+    </div>
+    <br>
+    <div class="text-center">
+        <form th:action="@{/addRole}">
+            <button type="submit" class="btn btn-info" th:name="id" th:value="${id}">Add role</button>
+        </form>
+    </div>
 
-<h2>Click button "Enter to begin :"</h2>
-<br>
-<input type="button" value="Enter" onclick="window.location.href='/login'">
-<br>
-
-На время настройки!!!<br>
-<input type="button" value="Registration" onclick="window.location.href='/register'">
-<br>
-<form th:action="@{/addRole}">
-    <button type="submit" th:name="id" th:value="${id}">Add role</button>
-</form>
-
-<br>
-<form th:action="@{/logout}" method="post">
-    <input type="submit" value="Sign Out"/>
-</form>
+    <br>
+    <div class="text-center">
+        <form th:action="@{/logout}" method="post">
+            <input type="submit" class="btn btn-danger" value="Sign Out"/>
+        </form>
+    </div>
+</div>
 </body>
 </html>
