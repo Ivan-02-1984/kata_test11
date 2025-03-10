@@ -10,7 +10,6 @@ import ru.kata.spring.boot_security.demo.models.Role;
 import ru.kata.spring.boot_security.demo.models.User;
 import ru.kata.spring.boot_security.demo.service.RoleService;
 import ru.kata.spring.boot_security.demo.service.UserService;
-import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.util.Collections;
 import java.util.List;
@@ -29,7 +28,6 @@ public class AdminController {
     }
 
     @GetMapping
-    @Transactional
     public String showAllUsers(Model model) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         User currentUser = userService.findByUsername(username);
@@ -53,7 +51,6 @@ public class AdminController {
     }
 
     @GetMapping("/editUser")
-    @Transactional
     public String showEditForm(@RequestParam Long id, Model model) {
         User user = userService.findById(id);
         Hibernate.initialize(user.getRoles());

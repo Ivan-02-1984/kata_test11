@@ -8,16 +8,16 @@ import ru.kata.spring.boot_security.demo.service.StringToRoleConverter;
 
 @Configuration
 public class MvcConfig implements WebMvcConfigurer {
-    public void addViewControllers(ViewControllerRegistry registry) {
-        registry.addViewController("/user").setViewName("user");
-    }
+
 
     private final StringToRoleConverter stringToRoleConverter;
 
     public MvcConfig(StringToRoleConverter stringToRoleConverter) {
         this.stringToRoleConverter = stringToRoleConverter;
     }
-
+    public void addViewControllers(ViewControllerRegistry registry) {
+        registry.addViewController("/user").setViewName("user");
+    }
     @Override
     public void addFormatters(FormatterRegistry registry) {
         registry.addConverter(stringToRoleConverter); // Регистрируем конвертер

@@ -197,6 +197,10 @@
                                         <input type="email" class="form-control" th:id="'email' + ${user.id}" th:value="${user.email}" name="email" />
                                     </div>
                                     <div class="form-group text-center">
+                                        <label th:attr="for='password' + ${user.id}" class="control-label font-weight-bold">Password</label>
+                                        <input type="password" class="form-control" th:id="'password' + ${user.id}" th:value="${user.password}" name="password" />
+                                    </div>
+                                    <div class="form-group text-center">
                                         <label th:attr="for='enabled' + ${user.id}" class="control-label font-weight-bold">Enabled</label>
                                         <select class="form-control" th:id="'enabled' + ${user.id}" name="enabled">
                                             <option value="true" th:selected="${user.enabled} == true">Enabled</option>

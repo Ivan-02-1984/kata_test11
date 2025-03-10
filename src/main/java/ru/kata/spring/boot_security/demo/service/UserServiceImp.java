@@ -1,11 +1,13 @@
 package ru.kata.spring.boot_security.demo.service;
 
+import org.hibernate.Hibernate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.kata.spring.boot_security.demo.dao.UserDao;
 import ru.kata.spring.boot_security.demo.models.Role;
 import ru.kata.spring.boot_security.demo.models.User;
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -22,20 +24,6 @@ public class UserServiceImp implements UserService {
         this.roleService = roleService;
         this.passwordEncoder = passwordEncoder;
     }
-
-//    @Transactional
-//    @Override
-//    public void add(User user) {
-//        user.setPassword(passwordEncoder.encode(user.getPassword()));
-//
-//        Set<Role> roles = new HashSet<>();
-//        for (Role role : user.getRoles()) {
-//            roles.add(roleService.findById(role.getId()));
-//        }
-//        user.setRoles(roles);
-//
-//        userDao.add(user);
-//    }
 
     @Transactional
     @Override
@@ -74,6 +62,8 @@ public class UserServiceImp implements UserService {
     @Transactional
     @Override
     public List<User> allUsers() {
+        List<User> users = userDao.allUsers();
+        users.forEach(user -> Hibernate.initialize(user.getRoles()));
         return userDao.allUsers();
     }
 
@@ -94,4 +84,6 @@ public class UserServiceImp implements UserService {
     public User findByUsername(String username) {
         return userDao.findByUsername(username);
     }
+
+
 }

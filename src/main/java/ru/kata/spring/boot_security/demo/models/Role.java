@@ -12,8 +12,15 @@ public class Role implements GrantedAuthority {
 
     private String name;
 
-    @ManyToMany(mappedBy = "roles",fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany(mappedBy = "roles", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Set<User> users;
+
+    public Role() {}
+
+    public Role(String name, Set<User> users) {
+        this.name = name;
+        this.users = users;
+    }
 
     @Override
     public String getAuthority() {
