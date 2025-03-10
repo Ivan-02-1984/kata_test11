@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml"
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       lang="en">
 <head>
     <meta charset="UTF-8">
@@ -61,7 +63,9 @@
 
 <nav class="navbar navbar-dark bg-dark fixed-top">
     <a class="navbar-brand ml-5" style="color: white; font-family: 'Roboto', sans-serif; font-size: 20px;">
-        <span th:text="${currentUser.email}" class="font-weight-bold"></span>
+<!--        <span th:text="${currentUser.email}" class="font-weight-bold"></span>-->
+        <span th:each="role : ${currentUser.roles}"
+              th:text="${role.name.replace('ROLE_', '')} + ' '">
         <span> with roles: </span>
         <span th:each="role : ${currentUser.roles}" th:text="${role.name} + ' '"></span>
     </a>
@@ -73,7 +77,7 @@
 
 <div class="menu">
     <!-- Кнопка "Admin" ТОЛЬКО для ROLE_ADMIN -->
-    <div sec:authorize="hasRole('ADMIN')">
+    <div sec:authorize="hasRole('ROLE_ADMIN')">
         <a th:href="@{'/admin'}">
             <button class="menu-btn">
                 Admin
@@ -82,13 +86,21 @@
     </div>
 
     <!-- Кнопка "User" ТОЛЬКО для ROLE_USER -->
-    <div sec:authorize="hasAnyRole('USER','ADMIN')">
+    <div sec:authorize="isAuthenticated()">
         <a th:href="@{'/user'}">
-            <button class="menu-btn" style="background-color: #057AFB; color: white;">
+            <button class="menu-btn"
+                    style="background-color: #057AFB; color: white;">
                 User
             </button>
         </a>
     </div>
+<!--    <div sec:authorize="hasAnyRole('USER','ADMIN')">-->
+<!--        <a th:href="@{'/user'}">-->
+<!--            <button class="menu-btn" style="background-color: #057AFB; color: white;">-->
+<!--                User-->
+<!--            </button>-->
+<!--        </a>-->
+<!--    </div>-->
 </div>
 
 <div class="container-main">
