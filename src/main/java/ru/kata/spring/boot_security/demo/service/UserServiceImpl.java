@@ -83,12 +83,10 @@ public class UserServiceImpl implements UserService {
         return userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
     }
-
+@Transactional
     @Override
     public List<User> getAllUsers() {
-        List<User> users = userRepository.findAll();
-        users.forEach(user -> Hibernate.initialize(user.getRoles())); // Инициализация внутри транзакции
-        return users;
+        return userRepository.findAllWithRoles();// Инициализация внутри транзакции
     }
 
     @Transactional
@@ -102,7 +100,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findByUsername(String username) {
-        return userRepository.findByUsername(username)
+        return userRepository.findByUsernameWithRoles(username)
                 .orElseThrow(() -> new UserNotFoundException("User not found: " + username));
     }
 

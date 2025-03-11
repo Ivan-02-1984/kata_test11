@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -31,14 +32,14 @@ public class AdminController {
         this.roleService = roleService;
         this.passwordEncoder = passwordEncoder;
     }
-
+@Transactional
     @GetMapping
     public String showAllUsers(Model model) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         User currentUser = userService.findByUsername(username);
 
         List<User> users = userService.getAllUsers();
-        users.forEach(user -> Hibernate.initialize(user.getRoles()));
+//        users.forEach(user -> Hibernate.initialize(user.getRoles()));
 
         model.addAttribute("user", new User()); // Добавляем пустой объект для формы
         model.addAttribute("allRoles", roleService.getAllRoles());

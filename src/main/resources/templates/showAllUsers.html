@@ -63,8 +63,8 @@
 
 <nav class="navbar navbar-dark bg-dark fixed-top">
     <a class="navbar-brand ml-5" style="color: white; font-family: 'Roboto', sans-serif; font-size: 20px;">
-        <span th:each="role : ${currentUser.roles}"
-              th:text="${role.name.replace('ROLE_', '')} + ' '"></span>
+<!--        <span th:text="${email.name.replace('ROLE_', '')} + ' '"></span>-->
+        <span th:text="${currentUser.email}" class="font-weight-bold"></span>
         <span> with roles: </span>
         <span th:each="role : ${currentUser.roles}" th:text="${role.name} + ' '"></span>
     </a>
