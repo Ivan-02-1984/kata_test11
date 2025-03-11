@@ -9,11 +9,14 @@ import ru.kata.spring.boot_security.demo.exception_handling.DuplicateUsernameExc
 import ru.kata.spring.boot_security.demo.exception_handling.UserNotFoundException;
 import ru.kata.spring.boot_security.demo.models.Role;
 import ru.kata.spring.boot_security.demo.models.User;
+import ru.kata.spring.boot_security.demo.models.UserUpdateForm;
 import ru.kata.spring.boot_security.demo.repositiry.RoleRepository;
 import ru.kata.spring.boot_security.demo.repositiry.UserRepository;
+
 import javax.management.relation.RoleNotFoundException;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,11 +24,13 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final RoleService roleService;
     private final PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository,@Qualifier("myPasswordEncoder") PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, RoleService roleService, @Qualifier("myPasswordEncoder") PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
+        this.roleService = roleService;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -47,28 +52,27 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public void updateUser(User updatedUser) {
-        User existingUser = userRepository.findById(updatedUser.getId())
+    public void updateUser(UserUpdateForm userUpdateForm) {
+        User existingUser = userRepository.findById(userUpdateForm.getId())
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        existingUser.setUsername(updatedUser.getUsername());
-        existingUser.setFirstName(updatedUser.getFirstName());
-        existingUser.setLastName(updatedUser.getLastName());
-        existingUser.setAge(updatedUser.getAge());
-        existingUser.setEmail(updatedUser.getEmail());
-        existingUser.setEnabled(updatedUser.isEnabled());
-
-        if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
-            existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+        // Обновляем пароль только если новое значение предоставлено
+        if (userUpdateForm.getPassword() != null && !userUpdateForm.getPassword().isEmpty()) {
+            existingUser.setPassword(passwordEncoder.encode(userUpdateForm.getPassword()));
         }
 
-        if (updatedUser.getRoles() != null) {
-            try {
-                setManagedRoles(updatedUser);
-            } catch (RoleNotFoundException e) {
-                throw new RuntimeException("Role not found", e);
-            }
-            existingUser.setRoles(updatedUser.getRoles());
+        // Обновляем остальные поля
+        existingUser.setUsername(userUpdateForm.getUsername());
+        existingUser.setFirstName(userUpdateForm.getFirstName());
+        existingUser.setLastName(userUpdateForm.getLastName());
+        existingUser.setAge(userUpdateForm.getAge());
+        existingUser.setEmail(userUpdateForm.getEmail());
+        existingUser.setEnabled(userUpdateForm.isEnabled());
+
+        // Обновляем роли, если они предоставлены
+        if (userUpdateForm.getRoleIds() != null && !userUpdateForm.getRoleIds().isEmpty()) {
+            Set<Role> roles = roleService.findRolesByIds(userUpdateForm.getRoleIds());
+            existingUser.setRoles(roles);
         }
 
         userRepository.save(existingUser);
